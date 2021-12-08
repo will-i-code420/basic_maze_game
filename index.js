@@ -1,13 +1,17 @@
 const { Engine, Render, Runner, Composite, Bodies, MouseConstraint, Mouse } = Matter;
 
+const width = 800;
+const height = 600;
+
 const engine = Engine.create();
 const { world } = engine;
 const render = Render.create({
 	element: document.body,
-	engine: engine,
+	engine,
 	options: {
-		width: 800,
-		height: 600
+		wireframes: false,
+		width,
+		height
 	}
 });
 
@@ -36,3 +40,19 @@ const borderWalls = [
 	})
 ];
 Composite.add(world, borderWalls);
+
+// Random Shapes
+for (let i = 0; i < 10; i++) {
+	const x = Math.random() * width;
+	const y = Math.random() * height;
+	Composite.add(world, Bodies.rectangle(x, y, 50, 50));
+	Composite.add(world, Bodies.polygon(x, y, 5, 60));
+	Composite.add(
+		world,
+		Bodies.circle(x, y, 20, {
+			render: {
+				fillStyle: 'blue'
+			}
+		})
+	);
+}
