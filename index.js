@@ -1,4 +1,4 @@
-const { Engine, Render, Runner, Composite, Bodies } = Matter;
+const { Engine, Render, Runner, Composite, Bodies, MouseConstraint, Mouse } = Matter;
 
 const engine = Engine.create();
 const { world } = engine;
@@ -13,6 +13,12 @@ const render = Render.create({
 
 Render.run(render);
 Runner.run(Runner.create(), engine);
+Composite.add(
+	world,
+	MouseConstraint.create(engine, {
+		mouse: Mouse.create(render.canvas)
+	})
+);
 
 // Border Walls
 const borderWalls = [
