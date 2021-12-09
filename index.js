@@ -1,7 +1,8 @@
-const { Engine, Render, Runner, Composite, Bodies, MouseConstraint, Mouse } = Matter;
+const { Engine, Render, Runner, Composite, Bodies } = Matter;
 
-const width = 800;
+const width = 600;
 const height = 600;
+const mazeCells = 3;
 
 const engine = Engine.create();
 const { world } = engine;
@@ -9,7 +10,7 @@ const render = Render.create({
 	element: document.body,
 	engine,
 	options: {
-		wireframes: false,
+		wireframes: true,
 		width,
 		height
 	}
@@ -17,42 +18,30 @@ const render = Render.create({
 
 Render.run(render);
 Runner.run(Runner.create(), engine);
-Composite.add(
-	world,
-	MouseConstraint.create(engine, {
-		mouse: Mouse.create(render.canvas)
-	})
-);
 
 // Border Walls
 const borderWalls = [
-	Bodies.rectangle(400, 0, 800, 40, {
+	Bodies.rectangle(width / 2, 0, width, 40, {
 		isStatic: true
 	}),
-	Bodies.rectangle(400, 600, 800, 40, {
+	Bodies.rectangle(width / 2, height, width, 40, {
 		isStatic: true
 	}),
-	Bodies.rectangle(0, 300, 40, 600, {
+	Bodies.rectangle(0, height / 2, 40, height, {
 		isStatic: true
 	}),
-	Bodies.rectangle(800, 300, 40, 600, {
+	Bodies.rectangle(width, height / 2, 40, height, {
 		isStatic: true
 	})
 ];
 Composite.add(world, borderWalls);
 
-// Random Shapes
-for (let i = 0; i < 10; i++) {
-	const x = Math.random() * width;
-	const y = Math.random() * height;
-	Composite.add(world, Bodies.rectangle(x, y, 50, 50));
-	Composite.add(world, Bodies.polygon(x, y, 5, 60));
-	Composite.add(
-		world,
-		Bodies.circle(x, y, 20, {
-			render: {
-				fillStyle: 'blue'
-			}
-		})
-	);
-}
+/* Maze Creation
+ 
+maze grid creates cells for maze, false means not visited during creation
+xGridWalls is for vertical walls between cells and yGridWalls are horizontal walls between the maze grid cells
+false means wall exists and true means no wall
+*/
+const mazeGrid = Array(mazeCells).fill(null).map(() => Array(mazeCells).fill(false));
+const xGridWalls = Array(mazeCells).fill(null).map(() => Array(mazeCells - 1).fill(false));
+const yGridWalls = Array(mazeCells - 1).fill(null).map(() => Array(mazeCells).fill(false));
