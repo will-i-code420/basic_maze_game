@@ -1,4 +1,4 @@
-const { Engine, Render, Runner, Composite, Bodies, Body } = Matter;
+const { Engine, Render, Runner, Composite, Bodies, Body, Events } = Matter;
 
 const width = 600;
 const height = 600;
@@ -120,9 +120,10 @@ yGridWalls.forEach((row, i) => {
 			col * mazeCellLength + mazeCellLength / 2,
 			i * mazeCellLength + mazeCellLength,
 			mazeCellLength,
-			1,
+			5,
 			{
-				isStatic: true
+				isStatic: true,
+				label: 'wall'
 			}
 		);
 		Composite.add(world, wall);
@@ -135,10 +136,11 @@ xGridWalls.forEach((row, i) => {
 		const wall = Bodies.rectangle(
 			col * mazeCellLength + mazeCellLength,
 			i * mazeCellLength + mazeCellLength / 2,
-			1,
+			5,
 			mazeCellLength,
 			{
-				isStatic: true
+				isStatic: true,
+				label: 'wall'
 			}
 		);
 		Composite.add(world, wall);
@@ -154,14 +156,17 @@ const goal = Bodies.rectangle(
 	mazeCellLength * 0.65,
 	{
 		isStatic: true,
-		wireframes: false
+		wireframes: false,
+		label: 'goal'
 	}
 );
 Composite.add(world, goal);
 
 // Player Creation
 
-const player = Bodies.circle(mazeCellLength / 2, mazeCellLength / 2, mazeCellLength * 0.25);
+const player = Bodies.circle(mazeCellLength / 2, mazeCellLength / 2, mazeCellLength * 0.25, {
+	label: 'player'
+});
 Composite.add(world, player);
 
 document.addEventListener('keydown', (e) => {
@@ -195,4 +200,19 @@ document.addEventListener('keydown', (e) => {
 		default:
 			break;
 	}
+});
+
+// Game Win Conditions
+
+Events.on(engine, 'collisionStart', (e) => {
+	e.pairs.forEach((collision) => {
+		const winTerms = [ 'goal', 'player' ];
+		const { bodyA, bodyB } = collision;
+		if (winTerms.includes(bodyA.label) && winTerms.includes(bodyB.label)) {
+			world.gravity.y = 1;
+			world.bodies.forEach((body) => {
+				if (body.label === 'wall') Body.setStatic(body, false);
+			});
+		}
+	});
 });
