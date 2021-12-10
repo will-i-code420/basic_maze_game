@@ -1,9 +1,11 @@
 const { Engine, Render, Runner, Composite, Bodies, Body, Events } = Matter;
 
-const width = 600;
-const height = 600;
-const mazeCells = 3;
-const mazeCellLength = width / mazeCells;
+const width = window.innerWidth;
+const height = window.innerHeight;
+const mazeRows = 10;
+const mazeColumns = 6;
+const rowLength = width / mazeRows;
+const columnLength = height / mazeColumns;
 
 const engine = Engine.create();
 engine.world.gravity.y = 0;
@@ -57,20 +59,20 @@ const shuffle = (arr) => {
 	return arr;
 };
 
-const mazeGrid = Array(mazeCells).fill(null).map(() => Array(mazeCells).fill(false));
-const xGridWalls = Array(mazeCells).fill(null).map(() => Array(mazeCells - 1).fill(false));
-const yGridWalls = Array(mazeCells - 1).fill(null).map(() => Array(mazeCells).fill(false));
-
-const startX = Math.floor(Math.random() * mazeCells);
-const startY = Math.floor(Math.random() * mazeCells);
+const mazeGrid = Array(mazeColumns).fill(null).map(() => Array(mazeRows).fill(false));
+const xGridWalls = Array(mazeColumns).fill(null).map(() => Array(mazeRows - 1).fill(false));
+const yGridWalls = Array(mazeColumns - 1).fill(null).map(() => Array(mazeRows).fill(false));
+const startRow = Math.floor(Math.random() * mazeColumns);
+const startColumn = Math.floor(Math.random() * mazeRows);
 
 const loopMazeCells = (x, y) => {
 	// if visited the cell at [x,y] return
+	console.log('loop maze cells start', mazeGrid[x][y]);
 	if (mazeGrid[x][y]) return;
 
 	// mark cell as visited
 	mazeGrid[x][y] = true;
-
+	console.log('marked', mazeGrid[x][y]);
 	// assemble random list of neighbors
 	const neighbors = shuffle([
 		[ x - 1, y, 'up' ],
@@ -78,16 +80,20 @@ const loopMazeCells = (x, y) => {
 		[ x, y - 1, 'left' ],
 		[ x, y + 1, 'right' ]
 	]);
-
+	console.log(neighbors);
 	// for each neighbor
 	for (let neighbor of neighbors) {
 		const [ nextX, nextY, direction ] = neighbor;
-
+		console.log('neighbor loop', nextX, nextY, direction);
 		// see if neighbor out of bounds
-		if (nextX < 0 || nextX >= mazeCells || nextY < 0 || nextY >= mazeCells) continue;
+		if (nextX < 0 || nextX >= mazeColumns || nextY < 0 || nextY >= mazeRows) {
+			continue;
+		}
 
 		// if visited that neighbor continue to next neighbor
-		if (mazeGrid[nextX][nextY]) continue;
+		if (mazeGrid[nextX][nextY]) {
+			continue;
+		}
 		// remove wall from either x or y gridWalls based on next neighbor
 		switch (direction) {
 			case 'up':
@@ -106,26 +112,20 @@ const loopMazeCells = (x, y) => {
 			default:
 				break;
 		}
+		// visit next cell
 		loopMazeCells(nextX, nextY);
 	}
-	// visit next cell
 };
 
-loopMazeCells(startX, startY);
+loopMazeCells(startRow, startColumn);
 
 yGridWalls.forEach((row, i) => {
 	row.forEach((open, col) => {
 		if (open) return;
-		const wall = Bodies.rectangle(
-			col * mazeCellLength + mazeCellLength / 2,
-			i * mazeCellLength + mazeCellLength,
-			mazeCellLength,
-			5,
-			{
-				isStatic: true,
-				label: 'wall'
-			}
-		);
+		const wall = Bodies.rectangle(col * rowLength + rowLength / 2, i * columnLength + columnLength, rowLength, 5, {
+			isStatic: true,
+			label: 'wall'
+		});
 		Composite.add(world, wall);
 	});
 });
@@ -134,10 +134,10 @@ xGridWalls.forEach((row, i) => {
 	row.forEach((open, col) => {
 		if (open) return;
 		const wall = Bodies.rectangle(
-			col * mazeCellLength + mazeCellLength,
-			i * mazeCellLength + mazeCellLength / 2,
+			col * rowLength + rowLength,
+			i * columnLength + columnLength / 2,
 			5,
-			mazeCellLength,
+			columnLength,
 			{
 				isStatic: true,
 				label: 'wall'
@@ -149,22 +149,16 @@ xGridWalls.forEach((row, i) => {
 
 // Goal Creation
 
-const goal = Bodies.rectangle(
-	width - mazeCellLength / 2,
-	height - mazeCellLength / 2,
-	mazeCellLength * 0.65,
-	mazeCellLength * 0.65,
-	{
-		isStatic: true,
-		wireframes: false,
-		label: 'goal'
-	}
-);
+const goal = Bodies.rectangle(width - rowLength / 2, height - columnLength / 2, rowLength * 0.65, columnLength * 0.65, {
+	isStatic: true,
+	wireframes: false,
+	label: 'goal'
+});
 Composite.add(world, goal);
 
 // Player Creation
-
-const player = Bodies.circle(mazeCellLength / 2, mazeCellLength / 2, mazeCellLength * 0.25, {
+const playerRadius = Math.min(rowLength, columnLength) * 0.25;
+const player = Bodies.circle(rowLength / 2, columnLength / 2, playerRadius, {
 	label: 'player'
 });
 Composite.add(world, player);
