@@ -166,25 +166,29 @@ Composite.add(world, player);
 
 document.addEventListener('keydown', (e) => {
 	const { x, y } = player.velocity;
-	switch (e.keyCode) {
-		case 87:
-		case 38:
-			// move up using w or up arrow keys
+	switch (e.key) {
+		// move up using w or up arrow keys
+		case 'w':
+		case 'W':
+		case 'ArrowUp':
 			Body.setVelocity(player, { x, y: y - 5 });
 			break;
-		case 68:
-		case 39:
-			//move right using d or right arrow keys
+		// move right using d or right arrow keys
+		case 'd':
+		case 'D':
+		case 'ArrowRight':
 			Body.setVelocity(player, { x: x + 5, y });
 			break;
-		case 83:
-		case 40:
-			// move down using s or down arrow keys
+		// move down using s or down arrow keys
+		case 's':
+		case 'S':
+		case 'ArrowDown':
 			Body.setVelocity(player, { x, y: y + 5 });
 			break;
-		case 65:
-		case 37:
-			// move left using a or left arrow keys
+		// move left using a or left arrow keys
+		case 'a':
+		case 'A':
+		case 'ArrowLeft':
 			Body.setVelocity(player, { x: x - 5, y });
 			break;
 
