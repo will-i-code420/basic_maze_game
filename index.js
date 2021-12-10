@@ -1,4 +1,4 @@
-const { Engine, Render, Runner, Composite, Bodies } = Matter;
+const { Engine, Render, Runner, Composite, Bodies, Body } = Matter;
 
 const width = 600;
 const height = 600;
@@ -6,6 +6,7 @@ const mazeCells = 3;
 const mazeCellLength = width / mazeCells;
 
 const engine = Engine.create();
+engine.world.gravity.y = 0;
 const { world } = engine;
 const render = Render.create({
 	element: document.body,
@@ -160,5 +161,34 @@ Composite.add(world, goal);
 
 // Player Creation
 
-const player = Bodies.circle(mazeCellLength / 2, mazeCellLength / 2, mazeCellLength * 0.25, { isStatic: true });
+const player = Bodies.circle(mazeCellLength / 2, mazeCellLength / 2, mazeCellLength * 0.25);
 Composite.add(world, player);
+
+document.addEventListener('keydown', (e) => {
+	const { x, y } = player.velocity;
+	switch (e.keyCode) {
+		case 87:
+		case 38:
+			// move up using w or up arrow keys
+			Body.setVelocity(player, { x, y: y - 5 });
+			break;
+		case 68:
+		case 39:
+			//move right using d or right arrow keys
+			Body.setVelocity(player, { x: x + 5, y });
+			break;
+		case 83:
+		case 40:
+			// move down using s or down arrow keys
+			Body.setVelocity(player, { x, y: y + 5 });
+			break;
+		case 65:
+		case 37:
+			// move left using a or left arrow keys
+			Body.setVelocity(player, { x: x - 5, y });
+			break;
+
+		default:
+			break;
+	}
+});
