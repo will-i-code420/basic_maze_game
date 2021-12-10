@@ -22,16 +22,16 @@ Runner.run(Runner.create(), engine);
 
 // Border Walls
 const borderWalls = [
-	Bodies.rectangle(width / 2, 0, width, 40, {
+	Bodies.rectangle(width / 2, 0, width, 2, {
 		isStatic: true
 	}),
-	Bodies.rectangle(width / 2, height, width, 40, {
+	Bodies.rectangle(width / 2, height, width, 2, {
 		isStatic: true
 	}),
-	Bodies.rectangle(0, height / 2, 40, height, {
+	Bodies.rectangle(0, height / 2, 2, height, {
 		isStatic: true
 	}),
-	Bodies.rectangle(width, height / 2, 40, height, {
+	Bodies.rectangle(width, height / 2, 2, height, {
 		isStatic: true
 	})
 ];
@@ -143,3 +143,22 @@ xGridWalls.forEach((row, i) => {
 		Composite.add(world, wall);
 	});
 });
+
+// Goal Creation
+
+const goal = Bodies.rectangle(
+	width - mazeCellLength / 2,
+	height - mazeCellLength / 2,
+	mazeCellLength * 0.65,
+	mazeCellLength * 0.65,
+	{
+		isStatic: true,
+		wireframes: false
+	}
+);
+Composite.add(world, goal);
+
+// Player Creation
+
+const player = Bodies.circle(mazeCellLength / 2, mazeCellLength / 2, mazeCellLength * 0.25, { isStatic: true });
+Composite.add(world, player);
