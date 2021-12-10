@@ -2,3 +2,19 @@
 	margin: 0;
 	padding: 0;
 }
+
+.hidden {
+	display: none !important;
+}
+
+.winner {
+	position: absolute;
+	display: flex;
+	z-index: 1;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-size: 3em;
+	height: 100vh;
+	width: 100vw;
+}

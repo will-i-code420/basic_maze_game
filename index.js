@@ -2,8 +2,8 @@ const { Engine, Render, Runner, Composite, Bodies, Body, Events } = Matter;
 
 const width = window.innerWidth;
 const height = window.innerHeight;
-const mazeRows = 10;
-const mazeColumns = 6;
+const mazeRows = 4;
+const mazeColumns = 3;
 const rowLength = width / mazeRows;
 const columnLength = height / mazeColumns;
 
@@ -14,7 +14,7 @@ const render = Render.create({
 	element: document.body,
 	engine,
 	options: {
-		wireframes: true,
+		wireframes: false,
 		width,
 		height
 	}
@@ -124,7 +124,10 @@ yGridWalls.forEach((row, i) => {
 		if (open) return;
 		const wall = Bodies.rectangle(col * rowLength + rowLength / 2, i * columnLength + columnLength, rowLength, 5, {
 			isStatic: true,
-			label: 'wall'
+			label: 'wall',
+			render: {
+				fillStyle: 'red'
+			}
 		});
 		Composite.add(world, wall);
 	});
@@ -140,7 +143,10 @@ xGridWalls.forEach((row, i) => {
 			columnLength,
 			{
 				isStatic: true,
-				label: 'wall'
+				label: 'wall',
+				render: {
+					fillStyle: 'red'
+				}
 			}
 		);
 		Composite.add(world, wall);
@@ -152,14 +158,20 @@ xGridWalls.forEach((row, i) => {
 const goal = Bodies.rectangle(width - rowLength / 2, height - columnLength / 2, rowLength * 0.65, columnLength * 0.65, {
 	isStatic: true,
 	wireframes: false,
-	label: 'goal'
+	label: 'goal',
+	render: {
+		fillStyle: 'green'
+	}
 });
 Composite.add(world, goal);
 
 // Player Creation
 const playerRadius = Math.min(rowLength, columnLength) * 0.25;
 const player = Bodies.circle(rowLength / 2, columnLength / 2, playerRadius, {
-	label: 'player'
+	label: 'player',
+	render: {
+		fillStyle: 'blue'
+	}
 });
 Composite.add(world, player);
 
@@ -207,6 +219,7 @@ Events.on(engine, 'collisionStart', (e) => {
 			world.bodies.forEach((body) => {
 				if (body.label === 'wall') Body.setStatic(body, false);
 			});
+			document.querySelector('.winner').classList.remove('hidden');
 		}
 	});
 });
